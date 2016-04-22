@@ -1,0 +1,28 @@
+.fixedHeight {
+  height: 200px;
+}
+
+.moreFixedHeight {
+  height: 400px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+
+  .toolbarButton {
+    margin-right: 1em;
+    flex: 1 1;
+  }
+  .toolbarButton:last-child {
+    margin-right: auto;
+  }
+
+  .toolbarButtonWide {
+    margin-right: 1em;
+    flex-grow: 5;
+  }
+  .toolbarButtonWide:last-child {
+    margin-right: auto;
+  }
+}

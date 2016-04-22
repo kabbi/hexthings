@@ -1,0 +1,8 @@
+.hideSelection {
+  :global .ace_marker-layer .ace_selection {
+    background: transparent !important;
+  }
+  :global .ace_cursor {
+    color: transparent !important;
+  }
+}
