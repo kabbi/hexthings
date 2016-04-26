@@ -3,13 +3,15 @@ import { Grid, Row, Col } from 'react-bootstrap';
 
 import BuffersNavs from 'components/buffers/BuffersNavs';
 
+import BufferStore from 'stores/BufferStore';
+
 import css from './BuffersLayout.scss';
 
 const BuffersLayout = ({ children }) => (
   <Grid>
     <Row>
       <Col className={css.container}>
-        <BuffersNavs />
+        <BuffersNavs buffers={BufferStore.buffers} />
         <div className={css.container}>
           {children}
         </div>

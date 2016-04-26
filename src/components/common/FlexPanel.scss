@@ -1,0 +1,13 @@
+.panel {
+  // TODO: better inheriting
+  :global(.panel) {
+    display: flex;
+    flex-direction: column;
+  }
+  :global(.panel-heading) {
+    flex: 0 1 auto;
+  }
+  :global(.panel-body) {
+    flex: 1 0 auto;
+  }
+}

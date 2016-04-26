@@ -1,66 +1,66 @@
-import React, { Component, PropTypes } from 'react';
-import { Row, Col, Panel } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { observer } from 'mobx-react';
+import React, { PropTypes } from 'react';
+import ReactGridLayout, { WidthProvider } from 'react-grid-layout';
 
 import HexEditor from 'components/hex/HexEditor';
 import CodeEditor from 'components/common/CodeEditor';
+import FlexPanel from 'components/common/FlexPanel';
 
-import { selectors, actions } from 'redux/buffers';
-import ProjectPropTypes from 'utils/PropTypes';
+import BufferStore from 'stores/BufferStore';
 
-import css from './BufferView.scss';
+// eslint-disable-next-line babel/new-cap
+const ResponsiveReactGridLayout = WidthProvider(ReactGridLayout);
 
-const mapStateToProps = (state, props) => ({
-  currentBuffer: selectors.getBufferById(props.params.bufferId, state),
+const BufferView = observer(({ params: { bufferId } }) => {
+  const currentBuffer = BufferStore.getById(bufferId);
+  if (!currentBuffer) {
+    // TODO: better not found state
+    return <div>Not found!</div>;
+  }
+
+  const { panelLayout, data, parser: { code, transformError } } = currentBuffer;
+
+  const handleUpdateCode = newCode => {
+    currentBuffer.parser.code = newCode;
+  };
+
+  return (
+    <ResponsiveReactGridLayout
+      layout={panelLayout.toJSON()}
+      cols={12}
+      rowHeight={30}
+      draggableCancel=".panel-body"
+      draggableHandle=".panel-heading"
+      measureBeforeMount={false}
+    >
+      <FlexPanel
+        key="parserPanel"
+        header="Your parser code"
+        bsStyle={transformError ? 'warning' : 'success'}
+      >
+        <CodeEditor value={code} onChange={handleUpdateCode} />
+      </FlexPanel>
+      <FlexPanel key="dataPanel" header="Your data">
+        <HexEditor data={data} bytesPerLine={10} />
+      </FlexPanel>
+      <FlexPanel key="resultPanel" header="Parse results">
+        <div>
+          lalala
+        </div>
+      </FlexPanel>
+      <FlexPanel key="tokensPanel" header="Parsed tokens">
+        <div>
+          lalala
+        </div>
+      </FlexPanel>
+    </ResponsiveReactGridLayout>
+  );
 });
 
-const mapDispatchToProps = {
-  ...actions,
+BufferView.propTypes = {
+  params: PropTypes.shape({
+    bufferId: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
-class BufferView extends Component {
-  static propTypes = {
-    params: PropTypes.shape({
-      bufferId: PropTypes.string.isRequired,
-    }).isRequired,
-    currentBuffer: ProjectPropTypes.buffer.isRequired,
-  };
-
-  state = {
-    parserCode: null,
-  };
-
-  componentWillMount() {
-    const { parserCode } = this.props.currentBuffer;
-    this.setState({ parserCode });
-  }
-
-  handleUpdateParserCode(parserCode) {
-    this.setState({ parserCode });
-  }
-
-  render() {
-    const { parserCode } = this.state;
-    const { currentBuffer } = this.props;
-    return (
-      <Row>
-        <Col>
-          <Panel header="Your parser code" bsStyle="success">
-            <CodeEditor value={parserCode} onChange={::this.handleUpdateParserCode} />
-          </Panel>
-          <Panel header="Your data" className={css.fullHeight}>
-            <HexEditor data={currentBuffer.data} bytesPerLine={10} />
-          </Panel>
-          <Panel header="Parse results" className={css.fullHeight}>
-            lalala
-          </Panel>
-          <Panel header="Parsed tokens" className={css.fullHeight}>
-            allalal
-          </Panel>
-        </Col>
-      </Row>
-    );
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(BufferView);
+export default BufferView;
